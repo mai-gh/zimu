@@ -35,6 +35,10 @@ ssa.styles = {
 }
 
 parser = argparse.ArgumentParser()
+parser.add_argument("--hidden1", nargs='+')
+parser.add_argument("--hidden2", nargs='+')
+parser.add_argument("--hidden3", nargs='+')
+parser.add_argument("--hidden4", nargs='+')
 parser.add_argument("--layer1", nargs='+')
 parser.add_argument("--layer2", nargs='+')
 parser.add_argument("--layer3", nargs='+')
@@ -65,7 +69,7 @@ def add_to_ssa(stream, layer):
     ssa.append(e)
 
 for key, value in vars(args).items():
-  if (value) and ("layer" in key):
+  if value and ("layer" in key or "hidden" in key):
     encoding = "utf-8"
     offset = 0
     scale = 1
@@ -87,7 +91,8 @@ for key, value in vars(args).items():
               spp = (t - sos) / (streams[key][-1].end - sos) # sub position percent
               nt = int(t + (t * ((scale - 1) * spp)))
               setattr(e, se, nt)
-        add_to_ssa(streams[key], key)
+        if "layer" in key:
+          add_to_ssa(streams[key], key)
         value.pop()
       elif value[0] == "encoding":
         encoding = value[1]
