@@ -11,17 +11,7 @@
 
 #### Layout:
 
-<table style="margin-left: auto; margin-right: auto;">
-  <tr><td style="text-align: center; width:720px">LAYER 8</td></tr>
-  <tr><td style="text-align: center;">LAYER 7</td></tr>
-  <tr><td style="text-align: center;">LAYER 6</td></tr>
-  <tr><td style="text-align: center;">LAYER 5</td></tr>
-  <tr><td style="height:100px"></td></tr>
-  <tr><td style="text-align: center;">LAYER 4</td></tr>
-  <tr><td style="text-align: center;">LAYER 3</td></tr>
-  <tr><td style="text-align: center;">LAYER 2</td></tr>
-  <tr><td style="text-align: center;">LAYER 1</td></tr>
-</table>
+![](layout.jpg)
 
 #### Top-level arguments:
 
