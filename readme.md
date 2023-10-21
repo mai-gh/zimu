@@ -2,7 +2,7 @@
 
 #### Multi-language subtitle joiner specifically targeting chinese variantion conversions (traditional, simplified, pinyin, jyutping).
 
-<img src=example.jpg style="display: table; margin: 0 auto;" />
+<p align="center"><img src=example.jpg /></p>
 
 ---
 
@@ -10,7 +10,7 @@
 
 #### Layout:
 
-<img src=layout.jpg style="display: table; margin: 0 auto;" />
+<p align="center"><img src=layout.jpg /></p>
 
 #### Top-level arguments:
 
