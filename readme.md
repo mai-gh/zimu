@@ -2,8 +2,7 @@
 
 #### Multi-language subtitle joiner specifically targeting chinese variantion conversions (traditional, simplified, pinyin, jyutping).
 
-
-![](example.jpg)
+<img src=example.jpg style="display: table; margin: 0 auto;" />
 
 ---
 
@@ -11,7 +10,7 @@
 
 #### Layout:
 
-![](layout.jpg)
+<img src=layout.jpg style="display: table; margin: 0 auto;" />
 
 #### Top-level arguments:
 
@@ -49,7 +48,7 @@
 
 
 - `scale`
-  - Description: Fix subtitles that scew due to fpx mismatch. The first parameter is the begining of the first subtitle, the second parameter is the end of the last subtitle. Timestamp is in `hh:mm:ss.ms` format.
+  - Description: Fix subtitles that scew due to fps mismatch. The first parameter is the begining of the first subtitle, the second parameter is the end of the last subtitle. Timestamp is in `hh:mm:ss.ms` format.
   - Example: `scale 0:02:45.05 1:45:22`
   - Example: `scale 2:45.05 1:45:22`
 
@@ -57,7 +56,6 @@
 - `{target}`
   - Description: Subtitle file to load. **Required to be last** for: `encoding`, `offset`, `scale`.
   - Example: `cnt.srt`
-  - Example: `layer1`
 
 
 - `convert`
