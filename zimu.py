@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import argparse
+import sys
 import pysubs2
 from pysubs2 import Alignment, Color, SSAFile, SSAStyle 
 from hanziconv import HanziConv
@@ -18,8 +18,8 @@ ms = pysubs2.subrip.SubripFormat.ms_to_timestamp
 |          LAYER 2          |
 |          LAYER 1          |
 +===========================+
-
 """
+
 streams = {}
 ssa = SSAFile()
 ssa.styles = {
@@ -27,28 +27,20 @@ ssa.styles = {
     "layer7": SSAStyle(alignment=Alignment.TOP_CENTER, primarycolor=Color(0, 128, 128), marginv=24),
     "layer6": SSAStyle(alignment=Alignment.TOP_CENTER, primarycolor=Color(0, 128, 128), marginv=48),
     "layer5": SSAStyle(alignment=Alignment.TOP_CENTER, primarycolor=Color(0, 128, 128), marginv=72),
-
     "layer4": SSAStyle(alignment=Alignment.BOTTOM_CENTER, primarycolor=Color(0, 128, 128), marginv=72),
-    "layer3": SSAStyle(alignment=Alignment.BOTTOM_CENTER, primarycolor=Color(0, 128, 128), marginv=48),
-    "layer2": SSAStyle(alignment=Alignment.BOTTOM_CENTER, primarycolor=Color(200, 200, 0), marginv=24),
+    "layer3": SSAStyle(alignment=Alignment.BOTTOM_CENTER, primarycolor=Color(200, 200, 100), marginv=48),
+    "layer2": SSAStyle(alignment=Alignment.BOTTOM_CENTER, primarycolor=Color(200, 200, 100), marginv=24),
     "layer1": SSAStyle(alignment=Alignment.BOTTOM_CENTER, primarycolor=Color(200, 200, 200), marginv=0),
 }
 
-parser = argparse.ArgumentParser()
-parser.add_argument("--hidden1", nargs='+')
-parser.add_argument("--hidden2", nargs='+')
-parser.add_argument("--hidden3", nargs='+')
-parser.add_argument("--hidden4", nargs='+')
-parser.add_argument("--layer1", nargs='+')
-parser.add_argument("--layer2", nargs='+')
-parser.add_argument("--layer3", nargs='+')
-parser.add_argument("--layer4", nargs='+')
-parser.add_argument("--layer5", nargs='+')
-parser.add_argument("--layer6", nargs='+')
-parser.add_argument("--layer7", nargs='+')
-parser.add_argument("--layer8", nargs='+')
-parser.add_argument("--out", nargs=1, required=True)
-args = parser.parse_args()
+SA = []
+c = -1
+for a in sys.argv[1:]:
+  if a.startswith('--'):
+    SA.append({"option": a[2:], "params": []})
+    c += 1
+  else:
+    SA[c]['params'].append(a)
 
 def timestamp_to_sec(time_str):
   time_str = time_str.replace("," , ".")
@@ -68,7 +60,7 @@ def add_to_ssa(stream, layer):
     e.style = layer
     ssa.append(e)
 
-for key, value in vars(args).items():
+for key, value in [(x['option'], x['params']) for x in SA]:
   if value and ("layer" in key or "hidden" in key):
     encoding = "utf-8"
     offset = 0
@@ -149,5 +141,7 @@ for key, value in vars(args).items():
       else:
         print(f"invalid sub-command: {value[0]}")
         exit()
- 
-ssa.save(args.out[0])
+
+filename = next((x['params'][0] for x in SA if x['option'] == 'out'), None) 
+with open(filename, "w") as f:
+  ssa.to_file(fp=f, format_="ssa", header_notice="Generated with zimu: https://github.com/mai-gh/zimu\n" + " ".join([sys.argv[0].split('/')[-1], *sys.argv[1:]]))
