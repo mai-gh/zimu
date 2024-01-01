@@ -52,6 +52,12 @@
   - Example: `scale 0:02:45.05 1:45:22`
   - Example: `scale 2:45.05 1:45:22`
 
+- `midskew`
+  - Description: Sometimes scale isn't enough to for re-aligning subtitles, and as time gets closer to the middle the worse the offset is, while the beginning and end match the times you used for the scale.
+  - when you use scale a line will be printed like: `LAYER: layer3  --  SUBS_MID: 0:57:21.583`
+  - you will now need to go to this time position in the film and figure out how far out of sync (in seconds) the closest subtitle is
+  - Example: `midskew 1.88`
+
 
 - `{target}`
   - Description: Subtitle file to load. **Required to be last** for: `encoding`, `offset`, `scale`.

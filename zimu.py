@@ -27,7 +27,7 @@ ssa.styles = {
     "layer7": SSAStyle(alignment=Alignment.TOP_CENTER, primarycolor=Color(0, 128, 128), marginv=24),
     "layer6": SSAStyle(alignment=Alignment.TOP_CENTER, primarycolor=Color(0, 128, 128), marginv=48),
     "layer5": SSAStyle(alignment=Alignment.TOP_CENTER, primarycolor=Color(0, 128, 128), marginv=72),
-    "layer4": SSAStyle(alignment=Alignment.BOTTOM_CENTER, primarycolor=Color(0, 128, 128), marginv=72),
+    "layer4": SSAStyle(alignment=Alignment.BOTTOM_CENTER, primarycolor=Color(200, 200, 100), marginv=72),
     "layer3": SSAStyle(alignment=Alignment.BOTTOM_CENTER, primarycolor=Color(200, 200, 100), marginv=48),
     "layer2": SSAStyle(alignment=Alignment.BOTTOM_CENTER, primarycolor=Color(200, 200, 100), marginv=24),
     "layer1": SSAStyle(alignment=Alignment.BOTTOM_CENTER, primarycolor=Color(200, 200, 200), marginv=0),
@@ -54,6 +54,15 @@ def timestamp_to_sec(time_str):
   else:
     raise Exception(f"cant parse time_str: {time_str}")
 
+def ms_to_timestamp(ms):
+  h = str(int(ms / (60 * 60 * 1000)))
+  ms = ms % (60 * 60 * 1000)
+  m = str(int(ms / (60 * 1000))).zfill(2)
+  ms = ms % (60 * 1000)
+  s = str(int(ms / 1000)).zfill(2)
+  ms = str(ms % 1000).zfill(3)
+  return f"{h}:{m}:{s}.{ms}"
+
 def add_to_ssa(stream, layer):
   for e in stream:
     e.text = e.text.replace('\\N', ' ')
@@ -65,6 +74,7 @@ for key, value in [(x['option'], x['params']) for x in SA]:
     encoding = "utf-8"
     offset = 0
     scale = 1
+    midskew = 0
     film_first = 0
     film_last = 0
     while len(value) != 0:
@@ -81,8 +91,29 @@ for key, value in [(x['option'], x['params']) for x in SA]:
             for se in ["start", "end"]:
               t = getattr(e, se)
               spp = (t - sos) / (streams[key][-1].end - sos) # sub position percent
-              nt = int(t + (t * ((scale - 1) * spp)))
+              #nt = int(t + (t * ((scale - 1) * spp)))
+              skew = 0
+              nt = int(t + (t * ((scale - 1) * spp)) + skew)
               setattr(e, se, nt)
+
+          subs_mid = int(((streams[key][-1].end - streams[key][0].start) / 2) + streams[key][0].start)
+          print(f"LAYER: {key}  --  SUBS_MID: {ms_to_timestamp(subs_mid)}")
+          for e in streams[key]:
+            for se in ["start", "end"]:
+              t = getattr(e, se)
+              midskew_percent = t / subs_mid if t / subs_mid < 1 else 1 - ((t / subs_mid) % 1)
+              nt = int(t + (midskew * midskew_percent))
+              setattr(e, se, nt)
+
+#              print("\n-----------------------------------\n")
+#              print(e.text)
+#              print(nt)
+#              print("CURRENT: " + ms_to_timestamp(nt))
+#              print("TARGET:  0:59:46.04") # end of eng
+#              print(f"DIFFERENCE: {(int(timestamp_to_sec('0:59:46.04') * 1000) - nt) / 1000}")
+#              print(f"SCALE: {scale}")
+#              print("\n-----------------------------------\n")
+
         if "layer" in key:
           add_to_ssa(streams[key], key)
         value.pop()
@@ -96,6 +127,9 @@ for key, value in [(x['option'], x['params']) for x in SA]:
         film_first = int(timestamp_to_sec(value[1]) * 1000)
         film_last = int(timestamp_to_sec(value[2]) * 1000)
         value = value[3:]
+      elif value[0] == "midskew":
+        midskew = float(value[1]) * 1000
+        value = value[2:]
       elif value[0] == "convert":
         src_layer = streams[value[1]]
         convertion_type = value[2]
